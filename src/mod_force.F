@@ -3813,18 +3813,20 @@ CONTAINS
          & ("COULD NOT FIND OPEN BOUNDARY CONDITION TEMPERATURE FILE OBJECT",&
          & "FILE NAME: "//TRIM(OBC_TEMP_FILE))
 
-    ATT => FIND_ATT(OBC_T_FILE,"type",FOUND)
-    IF(.not. FOUND) CALL FATAL_ERROR &
-         & ("IN OPEN BOUNDARY CONDITION TEMPERATURE FILE OBJECT",&
-         & "FILE NAME: "//TRIM(OBC_TEMP_FILE),&
-         &"COULD NOT FIND GLOBAL ATTRIBURE: 'type'")
-
-
-    SELECT CASE(TRIM(ATT%CHR(1)))
-       !=================================
-       ! TIME SERIES OBC TEMPERATURE NUDGING DATA
-    CASE("FVCOM TIME SERIES OBC TS FILE")
-       !==================================         
+!@----> Remove OBC T/S type check, Siqi Li@2026-11-03
+!@    ATT => FIND_ATT(OBC_T_FILE,"type",FOUND)
+!@    IF(.not. FOUND) CALL FATAL_ERROR &
+!@         & ("IN OPEN BOUNDARY CONDITION TEMPERATURE FILE OBJECT",&
+!@         & "FILE NAME: "//TRIM(OBC_TEMP_FILE),&
+!@         &"COULD NOT FIND GLOBAL ATTRIBURE: 'type'")
+!@
+!@
+!@    SELECT CASE(TRIM(ATT%CHR(1)))
+!@       !=================================
+!@       ! TIME SERIES OBC TEMPERATURE NUDGING DATA
+!@    CASE("FVCOM TIME SERIES OBC TS FILE")
+!@       !==================================         
+!@<----
 
        OBC_T_TYPE = OBC_T_SIGMA
 
@@ -3957,17 +3959,18 @@ CONTAINS
        CALL NC_CONNECT_PVAR(OBC_T_P,STORAGE_ARR)
        NULLIFY(STORAGE_ARR)
 
-
-       !=====================================
-       ! DEFAULT CASE IF GLOBAL ATTRIBUTES OF FILE ARE INCORRECT
-    CASE DEFAULT
-       !=====================================
-       CALL FATAL_ERROR &
-            & ("IN OPEN BOUNDARY CONDITION TEMPERATURE FILE OBJECT",&
-            & "FILE NAME: "//TRIM(OBC_TEMP_FILE),&
-            &"THE GLOBAL ATTRIBURE 'type' RETURNED UNKNOWN TYPE:",&
-            & TRIM(ATT%CHR(1)))
-    END SELECT
+!@----> Remove OBC T/S type check, Siqi Li@2026-11-03
+!@       !=====================================
+!@       ! DEFAULT CASE IF GLOBAL ATTRIBUTES OF FILE ARE INCORRECT
+!@    CASE DEFAULT
+!@       !=====================================
+!@       CALL FATAL_ERROR &
+!@            & ("IN OPEN BOUNDARY CONDITION TEMPERATURE FILE OBJECT",&
+!@            & "FILE NAME: "//TRIM(OBC_TEMP_FILE),&
+!@            &"THE GLOBAL ATTRIBURE 'type' RETURNED UNKNOWN TYPE:",&
+!@            & TRIM(ATT%CHR(1)))
+!@    END SELECT
+!@<----
 
     ! afm 20151112 & EJA 20160921
     ! Need initialization. Otherwise, random values are asigned
@@ -4016,18 +4019,20 @@ CONTAINS
          & ("COULD NOT FIND OPEN BOUNDARY CONDITION SALINITY FILE OBJECT",&
          & "FILE NAME: "//TRIM(OBC_SALT_FILE))
 
-    ATT => FIND_ATT(OBC_S_FILE,"type",FOUND)
-    IF(.not. FOUND) CALL FATAL_ERROR &
-         & ("IN OPEN BOUNDARY CONDITION SALINITY FILE OBJECT",&
-         & "FILE NAME: "//TRIM(OBC_SALT_FILE),&
-         &"COULD NOT FIND GLOBAL ATTRIBURE: 'type'")
-
-
-    SELECT CASE(TRIM(ATT%CHR(1)))
-       !=================================
-       ! TIME SERIES OBC SALINITY NUDGING DATA
-    CASE("FVCOM TIME SERIES OBC TS FILE")
-       !==================================         
+!@----> Remove OBC T/S type check, Siqi Li@2026-11-03
+!@    ATT => FIND_ATT(OBC_S_FILE,"type",FOUND)
+!@    IF(.not. FOUND) CALL FATAL_ERROR &
+!@         & ("IN OPEN BOUNDARY CONDITION SALINITY FILE OBJECT",&
+!@         & "FILE NAME: "//TRIM(OBC_SALT_FILE),&
+!@         &"COULD NOT FIND GLOBAL ATTRIBURE: 'type'")
+!@
+!@
+!@    SELECT CASE(TRIM(ATT%CHR(1)))
+!@       !=================================
+!@       ! TIME SERIES OBC SALINITY NUDGING DATA
+!@    CASE("FVCOM TIME SERIES OBC TS FILE")
+!@       !==================================         
+!@<----
 
        OBC_S_TYPE = OBC_S_SIGMA
 
@@ -4161,17 +4166,18 @@ CONTAINS
        CALL NC_CONNECT_PVAR(OBC_S_P,STORAGE_ARR)
        NULLIFY(STORAGE_ARR)
 
-
-       !=====================================
-       ! DEFAULT CASE IF GLOBAL ATTRIBUTES OF FILE ARE INCORRECT
-    CASE DEFAULT
-       !=====================================
-       CALL FATAL_ERROR &
-            & ("IN OPEN BOUNDARY CONDITION SALINITY FILE OBJECT",&
-            & "FILE NAME: "//TRIM(OBC_SALT_FILE),&
-            &"THE GLOBAL ATTRIBURE 'type' RETURNED UNKNOWN TYPE:",&
-            & TRIM(ATT%CHR(1)))
-    END SELECT
+!@----> Remove OBC T/S type check, Siqi Li@2026-11-03
+!@       !=====================================
+!@       ! DEFAULT CASE IF GLOBAL ATTRIBUTES OF FILE ARE INCORRECT
+!@    CASE DEFAULT
+!@       !=====================================
+!@       CALL FATAL_ERROR &
+!@            & ("IN OPEN BOUNDARY CONDITION SALINITY FILE OBJECT",&
+!@            & "FILE NAME: "//TRIM(OBC_SALT_FILE),&
+!@            &"THE GLOBAL ATTRIBURE 'type' RETURNED UNKNOWN TYPE:",&
+!@            & TRIM(ATT%CHR(1)))
+!@    END SELECT
+!@<----
 
     ! afm 20150914 & EJA 20160921
     ! Need initialization. Otherwise, random values are asigned

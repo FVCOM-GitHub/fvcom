@@ -30,7 +30,6 @@ include ./make.inc
 
 #-----------BEGIN MAKEFILE-------------------------------------------------
             SHELL         = /bin/sh
-            EXEC          = fvcom
 
 #--------------------------------------------------------------------------
 #  Preprocessing and Compilation Directives
@@ -216,4 +215,11 @@ Makefiles::
 
 includes::
 include ./makedepends
-include ./make.inc
+ifdef FVCOM_MAKE_INC
+  ifeq ($(wildcard $(FVCOM_MAKE_INC)),)
+    $(error FVCOM_MAKE_INC file not found: $(FVCOM_MAKE_INC))
+  endif
+  include $(FVCOM_MAKE_INC)
+else
+  include ./make.inc
+endif

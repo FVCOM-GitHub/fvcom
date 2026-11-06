@@ -1,4 +1,4 @@
-# FVCOM 4.4.12
+# FVCOM 4.4.13
 
 * FVCOM Website: http://fvcom.smast.umassd.edu/
 * FVCOM Source Code: https://github.com/FVCOM-GitHub/FVCOM

@@ -296,6 +296,30 @@ CONTAINS
 !!# endif        ! Siqi Li, @20210809
     ! OUTPUT VARIABLES DEFAULT TO OFF
 
+    !@---> Initialize ACDD metadata, Siqi Li@2026-11-03
+    ACDD_ON = .FALSE.
+    ACDD_CONVENTIONS = 'CF-1.11 UGRID-2.0 ACDD-1.3'
+    ACDD_FEATURETYPE = ''
+    ACDD_ID = ''
+    ACDD_INFOURL = ''
+    ACDD_LICENSE = ''
+    ACDD_NAMING_AUTHORITY = ''
+    ACDD_STANDARD_NAME_VOCABULARY = ''
+    ACDD_SUMMARY = ''
+    ACDD_TITLE = ''
+
+    ACDD_CREATOR_COUNTRY = ''
+    ACDD_CREATOR_EMAIL = ''
+    ACDD_CREATOR_INSTITUTION = ''
+    ACDD_CREATOR_SECTOR = ''
+    ACDD_CREATOR_URL = ''
+
+    ACDD_PUBLISHER_COUNTRY = ''
+    ACDD_PUBLISHER_EMAIL = ''
+    ACDD_PUBLISHER_INSTITUTION = ''
+    ACDD_PUBLISHER_URL = ''
+    !@<---
+
     !--Parameters in NameList NML_NETCDF_SURFACE
     NCSF_ON = .False.
     NCSF_FIRST_OUT = 'Date to start NETCDF OUTPUT: Format the same as START_DATE'
@@ -615,6 +639,7 @@ CONTAINS
     write(UNIT=IPT,NML=NML_INTEGRATION)
     write(UNIT=IPT,NML=NML_RESTART)
     write(UNIT=IPT,NML=NML_NETCDF)
+    write(UNIT=IPT,NML=NML_ACDD)     !@ Print ACDD namelist, Siqi Li@2026-11-03
     write(UNIT=IPT,NML=NML_NETCDF_SURFACE)
     write(UNIT=IPT,NML=NML_NETCDF_AV)
     write(UNIT=IPT,NML=NML_SURFACE_FORCING)
@@ -745,6 +770,22 @@ CONTAINS
 
     if(DBG_SET(dbg_scl)) &
          & write(UNIT=IPT,NML=NML_NETCDF)
+
+    !@---> Read optional ACDD namelist, Siqi Li@2026-11-03
+    READ(UNIT=NMLUNIT, NML=NML_ACDD,IOSTAT=ios)
+    if(ios .GT. 0) then
+       if(DBG_SET(dbg_log)) write(UNIT=IPT,NML=NML_ACDD)
+       Call Fatal_Error("Can Not Read NameList NML_ACDD from file: "//trim(FNAME))
+    endif
+
+    REWIND(NMLUNIT)
+
+    if(DBG_SET(dbg_scl)) &
+         & write(IPT,*) "Read_Name_List:"
+
+    if(DBG_SET(dbg_scl)) &
+         & write(UNIT=IPT,NML=NML_ACDD)
+   !@<---
 
     ! Read Netcdf Output Settings
     READ(UNIT=NMLUNIT, NML=NML_NETCDF_SURFACE,IOSTAT=ios)

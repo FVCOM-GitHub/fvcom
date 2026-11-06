@@ -1922,7 +1922,14 @@ CONTAINS
 
 
     ! ADD THE FILE ATTRIBUTES
-    ATT => NC_MAKE_ATT(name='title',values=trim(case_title)) 
+    !@---> Support configurable ACDD metadata, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='title',values=TRIM(ACDD_TITLE))
+    ELSE
+      ATT => NC_MAKE_ATT(name='title',values=TRIM(case_title))
+    ENDIF
+    !@ ATT => NC_MAKE_ATT(name='title',values=trim(case_title)) 
+    !@<---
     NCF => ADD(NCF,ATT)
 
 
@@ -1941,9 +1948,71 @@ CONTAINS
     ATT => NC_MAKE_ATT(name='references',values=trim(fvcom_website)) 
     NCF => ADD(NCF,ATT)
 
-    netcdf_convention = 'CF-1.0'
-    ATT => NC_MAKE_ATT(name='Conventions',values=trim(netcdf_convention)) 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    netcdf_convention = 'CF-1.11 UGRID-2.0'
+    !@netcdf_convention = 'CF-1.0'
+    !@<---
+    !@---> Support configurable ACDD metadata, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='Conventions', values=TRIM(ACDD_CONVENTIONS))
+    ELSE
+      ATT => NC_MAKE_ATT(name='Conventions', values=TRIM(netcdf_convention))
+    ENDIF
+    !@ATT => NC_MAKE_ATT(name='Conventions',values=trim(netcdf_convention)) 
+    !@<---
     NCF => ADD(NCF,ATT)
+
+    !@---> Add ACDD global attributes, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='featureType',values=TRIM(ACDD_FEATURETYPE))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='id',values=TRIM(ACDD_ID))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='infoUrl',values=TRIM(ACDD_INFOURL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='license',values=TRIM(ACDD_LICENSE))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='naming_authority', values=TRIM(ACDD_NAMING_AUTHORITY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='standard_name_vocabulary', values=TRIM(ACDD_STANDARD_NAME_VOCABULARY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='summary',values=TRIM(ACDD_SUMMARY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_country', values=TRIM(ACDD_CREATOR_COUNTRY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_email', values=TRIM(ACDD_CREATOR_EMAIL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_institution', values=TRIM(ACDD_CREATOR_INSTITUTION))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_sector', values=TRIM(ACDD_CREATOR_SECTOR))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_url', values=TRIM(ACDD_CREATOR_URL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_country', values=TRIM(ACDD_PUBLISHER_COUNTRY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_email', values=TRIM(ACDD_PUBLISHER_EMAIL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_institution', values=TRIM(ACDD_PUBLISHER_INSTITUTION))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_url', values=TRIM(ACDD_PUBLISHER_URL))
+      NCF => ADD(NCF,ATT)
+    ENDIF
+   !@<---
 
 #  if defined (SPHERICAL)
     ATT => NC_MAKE_ATT(name='CoordinateSystem',values="GeoReferenced" ) 
@@ -2029,6 +2098,14 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
     VAR  => ADD(VAR,ATT)
 # endif
+
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 # endif
@@ -2283,6 +2360,13 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
        VAR  => ADD(VAR,ATT)
 
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='face')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 # endif
@@ -2303,6 +2387,13 @@ CONTAINS
 
          ATT  => NC_MAKE_ATT(name='positive',values='down') 
          VAR  => ADD(VAR,ATT)
+
+         !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+         ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+         VAR  => ADD(VAR,ATT)
+         ATT  => NC_MAKE_ATT(name='location',values='node')
+         VAR  => ADD(VAR,ATT)
+         !@<--- 
 
          NCF  => ADD(NCF,VAR)
        END IF
@@ -2344,8 +2435,39 @@ CONTAINS
        VAR  => ADD(VAR,ATT)
 # endif
 
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='node')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
+
+    !@---> Add UGRID mesh topology, Siqi Li@2026-11-03
+    VAR  => NC_MAKE_AVAR(name='fvcom_mesh',values=0)
+    ATT  => NC_MAKE_ATT(name='cf_role',values='mesh_topology')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='topology_dimension',values=2)
+    VAR  => ADD(VAR,ATT)
+#  if defined(SPHERICAL)
+    ATT  => NC_MAKE_ATT(name='node_coordinates',values='lon lat')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_coordinates',values='lonc latc')
+    VAR  => ADD(VAR,ATT)
+#  else
+    ATT  => NC_MAKE_ATT(name='node_coordinates',values='x y')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_coordinates',values='xc yc')
+    VAR  => ADD(VAR,ATT)
+#  endif
+    ATT  => NC_MAKE_ATT(name='face_node_connectivity',values='nv')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_dimension',values='nele')
+    VAR  => ADD(VAR,ATT)
+    NCF  => ADD(NCF,VAR)
+    !@<---
 
 # if defined(UCF)
     ! THE UCF STANDARD INCLUDES ONE CONNECTIVITY ARRAY FOR EACH MESH
@@ -2452,6 +2574,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='long_name',values='nodes surrounding element') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID connectivity indexing, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='cf_role',values='face_node_connectivity')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='start_index',values=1)
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 # endif
@@ -2601,6 +2730,13 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
        VAR  => ADD(VAR,ATT)
 
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='face')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 !# endif
@@ -2714,7 +2850,14 @@ CONTAINS
 
 
     ! ADD THE FILE ATTRIBUTES
-    ATT => NC_MAKE_ATT(name='title',values=trim(case_title)) 
+    !@---> Support configurable ACDD metadata, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='title',values=TRIM(ACDD_TITLE))
+    ELSE
+      ATT => NC_MAKE_ATT(name='title',values=TRIM(case_title))
+    ENDIF
+    !@ ATT => NC_MAKE_ATT(name='title',values=trim(case_title)) 
+    !@<---
     NCF => ADD(NCF,ATT)
 
 
@@ -2733,9 +2876,71 @@ CONTAINS
     ATT => NC_MAKE_ATT(name='references',values=trim(fvcom_website)) 
     NCF => ADD(NCF,ATT)
 
-    netcdf_convention = 'CF-1.0'
-    ATT => NC_MAKE_ATT(name='Conventions',values=trim(netcdf_convention)) 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    netcdf_convention = 'CF-1.11 UGRID-2.0'
+    !@ netcdf_convention = 'CF-1.0'
+    !@<---
+    !@---> Support configurable ACDD metadata, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='Conventions', values=TRIM(ACDD_CONVENTIONS))
+    ELSE
+      ATT => NC_MAKE_ATT(name='Conventions', values=TRIM(netcdf_convention))
+    ENDIF
+    !@ATT => NC_MAKE_ATT(name='Conventions',values=trim(netcdf_convention)) 
+    !@<---
     NCF => ADD(NCF,ATT)
+
+    !@---> Add ACDD global attributes, Siqi Li@2026-11-03
+    IF (ACDD_ON) THEN
+      ATT => NC_MAKE_ATT(name='featureType',values=TRIM(ACDD_FEATURETYPE))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='id',values=TRIM(ACDD_ID))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='infoUrl',values=TRIM(ACDD_INFOURL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='license',values=TRIM(ACDD_LICENSE))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='naming_authority', values=TRIM(ACDD_NAMING_AUTHORITY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='standard_name_vocabulary', values=TRIM(ACDD_STANDARD_NAME_VOCABULARY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='summary',values=TRIM(ACDD_SUMMARY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_country', values=TRIM(ACDD_CREATOR_COUNTRY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_email', values=TRIM(ACDD_CREATOR_EMAIL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_institution', values=TRIM(ACDD_CREATOR_INSTITUTION))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_sector', values=TRIM(ACDD_CREATOR_SECTOR))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='creator_url', values=TRIM(ACDD_CREATOR_URL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_country', values=TRIM(ACDD_PUBLISHER_COUNTRY))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_email', values=TRIM(ACDD_PUBLISHER_EMAIL))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_institution', values=TRIM(ACDD_PUBLISHER_INSTITUTION))
+      NCF => ADD(NCF,ATT)
+
+      ATT => NC_MAKE_ATT(name='publisher_url', values=TRIM(ACDD_PUBLISHER_URL))
+      NCF => ADD(NCF,ATT)
+    ENDIF
+   !@<---
 
 #  if defined (SPHERICAL)
     ATT => NC_MAKE_ATT(name='CoordinateSystem',values="GeoReferenced" ) 
@@ -2815,6 +3020,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
     VAR  => ADD(VAR,ATT)
 # endif
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 # endif
@@ -2960,6 +3172,13 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
        VAR  => ADD(VAR,ATT)
 
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='face')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 
@@ -2982,6 +3201,13 @@ CONTAINS
 
          ATT  => NC_MAKE_ATT(name='positive',values='down') 
          VAR  => ADD(VAR,ATT)
+
+         !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+         ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+         VAR  => ADD(VAR,ATT)
+         ATT  => NC_MAKE_ATT(name='location',values='node')
+         VAR  => ADD(VAR,ATT)
+         !@<---
 
          NCF  => ADD(NCF,VAR)
        END IF
@@ -3023,8 +3249,39 @@ CONTAINS
        VAR  => ADD(VAR,ATT)
 # endif
 
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='node')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
+
+    !@---> Add UGRID mesh topology, Siqi Li@2026-11-03
+    VAR  => NC_MAKE_AVAR(name='fvcom_mesh',values=0)
+    ATT  => NC_MAKE_ATT(name='cf_role',values='mesh_topology')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='topology_dimension',values=2)
+    VAR  => ADD(VAR,ATT)
+#  if defined(SPHERICAL)
+    ATT  => NC_MAKE_ATT(name='node_coordinates',values='lon lat')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_coordinates',values='lonc latc')
+    VAR  => ADD(VAR,ATT)
+#  else
+    ATT  => NC_MAKE_ATT(name='node_coordinates',values='x y')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_coordinates',values='xc yc')
+    VAR  => ADD(VAR,ATT)
+#  endif
+    ATT  => NC_MAKE_ATT(name='face_node_connectivity',values='nv')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='face_dimension',values='nele')
+    VAR  => ADD(VAR,ATT)
+    NCF  => ADD(NCF,VAR)
+    !@<---
 
 # if defined(UCF)
     ! THE UCF STANDARD INCLUDES ONE CONNECTIVITY ARRAY FOR EACH MESH
@@ -3132,6 +3389,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='long_name',values='nodes surrounding element') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID connectivity indexing, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='cf_role',values='face_node_connectivity')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='start_index',values=1)
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 # endif
 
@@ -3218,6 +3482,11 @@ CONTAINS
        VAR  => ADD(VAR,ATT)
 # endif
        
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 
@@ -3248,6 +3517,13 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='grid_location',values='center') 
        VAR  => ADD(VAR,ATT)
        
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='face')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 # endif
@@ -3465,6 +3741,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='long_name',values='Area of elements around a node') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! ART1
@@ -3474,6 +3757,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='long_name',values='Area of Node-Base Con&
          &trol volume') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -3870,6 +4160,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -3940,6 +4237,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -3958,6 +4262,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -3979,6 +4290,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! VA_NORTH
@@ -3996,6 +4314,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 # endif
@@ -4056,6 +4381,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -4075,6 +4407,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4294,6 +4633,13 @@ CONTAINS
     VAR  => ADD(VAR,ATT)    
 # endif
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -4315,6 +4661,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4415,6 +4768,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! VISCOFH
@@ -4435,6 +4795,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4457,6 +4824,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! KH
@@ -4477,6 +4851,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4499,6 +4880,12 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
     NCF  => ADD(NCF,VAR)
 
 # if defined (GOTM)
@@ -4521,6 +4908,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! TEPS
@@ -4542,6 +4936,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 # else
     ! Q2
@@ -4562,6 +4963,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4585,6 +4993,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! L
@@ -4605,6 +5020,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -4969,6 +5391,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     IF(DBG_SET(DBG_SBR)) WRITE(IPT,*) "END ATMOSPHERIC_PRESSURE_FILE_OBJECT"
@@ -5036,6 +5465,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! VVWIND
@@ -5057,6 +5493,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -5075,6 +5518,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5145,6 +5595,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! EVAPORATION
@@ -5169,6 +5626,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5300,6 +5764,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! CC_SPONGE
@@ -5317,6 +5788,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5342,6 +5820,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! TMEAN1
@@ -5363,6 +5848,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! SMEAN1
@@ -5383,6 +5875,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5478,6 +5977,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='units',values='meters') 
     VAR  => ADD(VAR,ATT)
     
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 # endif
     
@@ -5491,6 +5997,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='units',values='meters') 
     VAR  => ADD(VAR,ATT)
        
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 # endif
 
@@ -5507,6 +6020,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='units',values='meters') 
     VAR  => ADD(VAR,ATT)
        
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 # endif      
     ! -------- end new -------------------------------------
@@ -5681,6 +6201,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 !qxu{for inundation maps
@@ -5696,6 +6223,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 !qxu}
@@ -5767,6 +6301,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! ICING_10KTS
@@ -5784,6 +6325,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5803,6 +6351,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! ICING_WNDY
@@ -5821,6 +6376,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! ICING_SATMP
@@ -5838,6 +6400,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -5905,6 +6474,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! GROUNDWATER INFLOW TEMPERATURE
@@ -5924,6 +6500,12 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='type',values='data') 
        VAR  => ADD(VAR,ATT)
        
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='node')
+       VAR  => ADD(VAR,ATT)
+
        NCF  => ADD(NCF,VAR)
     END IF
 
@@ -5944,6 +6526,13 @@ CONTAINS
        ATT  => NC_MAKE_ATT(name='type',values='data') 
        VAR  => ADD(VAR,ATT)
        
+       !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+       ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+       VAR  => ADD(VAR,ATT)
+       ATT  => NC_MAKE_ATT(name='location',values='node')
+       VAR  => ADD(VAR,ATT)
+       !@<---
+
        NCF  => ADD(NCF,VAR)
     END IF
 
@@ -6000,6 +6589,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     IF(DBG_SET(DBG_SBR)) WRITE(IPT,*) "END QP_FILE_OBJECT"
@@ -6050,6 +6646,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6123,6 +6726,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! NHQDRX
@@ -6141,6 +6751,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6161,6 +6778,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! NHQDRZ
@@ -6179,6 +6803,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6199,6 +6830,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! NHQ2DY
@@ -6217,6 +6855,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6293,6 +6938,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
     
    ! ICE VOLUME
@@ -6321,6 +6973,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6354,6 +7013,13 @@ CONTAINS
 
 !    ATT  => NC_MAKE_ATT(name='missing_value',values=0.0_SP)
 !    VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
     
@@ -6548,6 +7214,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
     
    ! ICE VOLUME
@@ -6574,6 +7247,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
     
    ! SNOW VOLUME
@@ -6599,6 +7279,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
      
@@ -6629,6 +7316,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
      
    !  snow energy 
@@ -6654,6 +7348,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
     
@@ -6682,6 +7383,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6744,6 +7452,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -6762,6 +7477,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6837,6 +7559,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
    ! salt
@@ -6861,6 +7590,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6887,6 +7623,13 @@ CONTAINS
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
     
@@ -6916,6 +7659,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)    
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
       !-----------------------------------------------------------------
@@ -6936,6 +7686,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -6964,6 +7721,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
       !-----------------------------------------------------------------
@@ -6990,6 +7754,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7018,6 +7789,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7093,6 +7871,13 @@ CONTAINS
      ATT  => NC_MAKE_ATT(name='type',values='data') 
      VAR  => ADD(VAR,ATT)    
 
+     !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+     ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+     VAR  => ADD(VAR,ATT)
+     ATT  => NC_MAKE_ATT(name='location',values='node')
+     VAR  => ADD(VAR,ATT)
+     !@<---
+
      NCF  => ADD(NCF,VAR)
   
      NULLIFY(BIO_ALL_PNT)
@@ -7163,6 +7948,13 @@ CONTAINS
     
      ATT  => NC_MAKE_ATT(name='type',values='data') 
      VAR  => ADD(VAR,ATT)    
+
+     !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+     ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+     VAR  => ADD(VAR,ATT)
+     ATT  => NC_MAKE_ATT(name='location',values='node')
+     VAR  => ADD(VAR,ATT)
+     !@<---
 
      NCF  => ADD(NCF,VAR)
   
@@ -7296,6 +8088,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     !  Wave Direction
@@ -7313,6 +8112,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7333,6 +8139,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     !  Wavelength
@@ -7350,6 +8163,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7421,6 +8241,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 !   bottom orbital velocity 
@@ -7438,6 +8265,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7457,6 +8291,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 !   bottom wave direction 
@@ -7474,6 +8315,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7556,6 +8404,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7576,6 +8431,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! U_STRESS_3D
@@ -7594,6 +8456,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7615,6 +8484,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7635,6 +8511,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7654,6 +8537,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7754,6 +8644,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7778,6 +8675,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7804,6 +8708,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7828,6 +8739,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7854,6 +8772,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -7879,6 +8804,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! ua_fml
@@ -7898,6 +8830,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -7919,6 +8858,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -8002,6 +8948,13 @@ CONTAINS
 
   ATT  => NC_MAKE_ATT(name='type',values='data')
   VAR  => ADD(VAR,ATT)
+
+  !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+  ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+  VAR  => ADD(VAR,ATT)
+  ATT  => NC_MAKE_ATT(name='location',values='node')
+  VAR  => ADD(VAR,ATT)
+  !@<---
 
   NCF  => ADD(NCF,VAR)
 
@@ -8107,6 +9060,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     NULLIFY(BLD_P)
@@ -8130,6 +9090,13 @@ CONTAINS
     ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     NULLIFY(SLD_P)
@@ -8150,6 +9117,13 @@ CONTAINS
       ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid') 
       VAR  => ADD(VAR,ATT)
 
+      !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+      ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+      VAR  => ADD(VAR,ATT)
+      ATT  => NC_MAKE_ATT(name='location',values='node')
+      VAR  => ADD(VAR,ATT)
+      !@<---
+
       NCF  => ADD(NCF,VAR)
     endif
 
@@ -8169,6 +9143,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -8210,6 +9191,13 @@ CONTAINS
       ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid') 
       VAR  => ADD(VAR,ATT)
 
+      !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+      ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+      VAR  => ADD(VAR,ATT)
+      ATT  => NC_MAKE_ATT(name='location',values='node')
+      VAR  => ADD(VAR,ATT)
+      !@<---
+
       NCF  => ADD(NCF,VAR)
   
       NULLIFY(BED_P)
@@ -8249,6 +9237,13 @@ CONTAINS
 
       ATT  => NC_MAKE_ATT(name='grid',values='fvcom_grid') 
       VAR  => ADD(VAR,ATT)
+
+      !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+      ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+      VAR  => ADD(VAR,ATT)
+      ATT  => NC_MAKE_ATT(name='location',values='node')
+      VAR  => ADD(VAR,ATT)
+      !@<---
 
       NCF  => ADD(NCF,VAR)
 
@@ -8332,6 +9327,13 @@ CONTAINS
     VAR  => ADD(VAR,ATT)
 # endif
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
 
@@ -8395,6 +9397,13 @@ CONTAINS
 
     ATT  => NC_MAKE_ATT(name='type',values='data')
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 
@@ -10197,6 +11206,13 @@ END SUBROUTINE LOAD_SUBDOMAIN_FILE
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
 
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='face')
+    VAR  => ADD(VAR,ATT)
+    !@<---
+
     NCF  => ADD(NCF,VAR)
 
     ! VISCOFH_SURFACE
@@ -10217,6 +11233,13 @@ END SUBROUTINE LOAD_SUBDOMAIN_FILE
     
     ATT  => NC_MAKE_ATT(name='type',values='data') 
     VAR  => ADD(VAR,ATT)
+
+    !@---> Add UGRID mesh/location metadata, Siqi Li@2026-11-03
+    ATT  => NC_MAKE_ATT(name='mesh',values='fvcom_mesh')
+    VAR  => ADD(VAR,ATT)
+    ATT  => NC_MAKE_ATT(name='location',values='node')
+    VAR  => ADD(VAR,ATT)
+    !@<---
 
     NCF  => ADD(NCF,VAR)
 

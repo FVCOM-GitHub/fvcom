@@ -9503,8 +9503,8 @@ FUNCTION IS_VALID_ITIME(VAR1,VAR2,tzone) RESULT(RES)
 !!$       & ("IS_VALID_INT2_MJD: VARIABLE PASSED HAS DIMENSION&
 !!$       & 'time' BUT IT IS NOT AN 'UNLIMITED' DIMENSION", "VARNAME: "//TRIM(VAR1%VARNAME))
 
-
   ATT => find_att(VAR1,'units',FOUND)
+  IF (.NOT. FOUND) ATT => find_att(VAR1,'description',FOUND) !@ Standardize CF time metadata, Siqi Li@2026-11-03
   IF(.not. FOUND) return
 
   IF(mjd_units .eq. ATT%chr(1)(1:len_trim(mjd_units)) .or.     &
@@ -9547,6 +9547,7 @@ FUNCTION IS_VALID_ITIME(VAR1,VAR2,tzone) RESULT(RES)
 !!$       & 'time' BUT IT IS NOT AN 'UNLIMITED' DIMENSION", "VARNAME: "//TRIM(VAR2%VARNAME))
 
   ATT => find_att(VAR2,'units',FOUND)
+  IF (.NOT. FOUND) ATT => find_att(VAR2,'description',FOUND) !@ Standardize CF time metadata, Siqi Li@2026-11-03
   IF(.not. FOUND) return
   
   IF(ATT%chr(1)(1:len_trim(msec_units)) .NE. msec_units) RETURN
@@ -9595,7 +9596,10 @@ END FUNCTION IS_VALID_ITIME
     IF (use_mjd) THEN
       IF(DATE_REFERENCE == 'default')THEN
 
-       ATT  => NC_MAKE_ATT(name='units',values=mjd_units)
+!@---> Update Itime/Itime2 metadata for CF compliance, Siqi Li@2026-11-03
+!@       ATT  => NC_MAKE_ATT(name='units',values=mjd_units)
+       ATT  => NC_MAKE_ATT(name='description',values=mjd_units)
+!@<---       
        VAR  => ADD(VAR,ATT)
 
        ATT  => NC_MAKE_ATT(name='format',values=fmat)
@@ -9603,7 +9607,10 @@ END FUNCTION IS_VALID_ITIME
 
       ELSE
 
-       ATT  => NC_MAKE_ATT(name='units',values='days since '//trim(DATE_REFERENCE))
+!@---> Update Itime/Itime2 metadata for CF compliance, Siqi Li@2026-11-03
+!@       ATT  => NC_MAKE_ATT(name='units',values='days since '//trim(DATE_REFERENCE))
+       ATT  => NC_MAKE_ATT(name='description',values='days since '//trim(DATE_REFERENCE))
+!@<---
        VAR  => ADD(VAR,ATT)
        
        ATT  => NC_MAKE_ATT(name='format',values=rfmat)
@@ -9614,7 +9621,10 @@ END FUNCTION IS_VALID_ITIME
        ATT  => NC_MAKE_ATT(name='time_zone',values='UTC') 
        VAR  => ADD(VAR,ATT)
     ELSE
-       ATT  => NC_MAKE_ATT(name='units',values=days_units)
+!@---> Update Itime/Itime2 metadata for CF compliance, Siqi Li@2026-11-03
+!@       ATT  => NC_MAKE_ATT(name='units',values=days_units)
+       ATT  => NC_MAKE_ATT(name='description',values=days_units)
+!@<----
        VAR  => ADD(VAR,ATT)
               
        ATT  => NC_MAKE_ATT(name='time_zone',values='none') 
@@ -9650,13 +9660,19 @@ END FUNCTION IS_VALID_ITIME
     END IF
 
     IF (use_mjd) THEN
-       ATT  => NC_MAKE_ATT(name='units',values=msec_units) 
+!@---> Update Itime/Itime2 metadata for CF compliance, Siqi Li@2026-11-03
+!@       ATT  => NC_MAKE_ATT(name='units',values=msec_units) 
+       ATT  => NC_MAKE_ATT(name='description',values=msec_units)
+!@<---
        VAR  => ADD(VAR,ATT)
        
        ATT  => NC_MAKE_ATT(name='time_zone',values='UTC') 
        VAR  => ADD(VAR,ATT)
     ELSE
-       ATT  => NC_MAKE_ATT(name='units',values=msec_units) 
+!@---> Update Itime/Itime2 metadata for CF compliance, Siqi Li@2026-11-03
+!@       ATT  => NC_MAKE_ATT(name='units',values=msec_units)
+       ATT  => NC_MAKE_ATT(name='description',values=msec_units)
+!@<---
        VAR  => ADD(VAR,ATT)
        
        ATT  => NC_MAKE_ATT(name='time_zone',values='none') 
